@@ -1,0 +1,26 @@
+#include<stdio.h>
+#include<pthread.h>
+#include<unistd.h>
+int a;
+pthread_mutex_t lock;
+void *input(void *x);
+int main()
+{
+	pthread_mutex_init(&lock,NULL);
+	pthread_t th,th1;
+	pthread_create(&th,NULL,input,&a);
+	pthread_join(th,NULL);
+	
+}
+void *input(void *x)
+{
+	pthread_mutex_lock(&lock);
+	int *i=(int *)x;
+	printf("\nEnter a number : ");
+	scanf("%d",i);
+	a=*i;
+	sleep(1);
+	printf("\nnumber entered : %d ",a);
+	pthread_mutex_unlock(&lock);
+}
+
