@@ -1,0 +1,92 @@
+#include<stdio.h>
+#include<pthread.h>
+#include<unistd.h>
+#include<stdbool.h>
+int P=5;
+int R=3;
+int need[5][4];
+
+struct safe
+{
+	int process[5];
+	int avail[4];
+	int max[5][4];
+	int allot[5][4];
+}s1={{0,1,2,3,4},{1,5,2,0},{{0,0,1,2},{1,7,5,0},{2,3,5,6},{0,6,5,2},{0,6,5,6}},{{0,0,1,2},{1,0,0,0},{1,3,5,4},{0,6,3,2},{0,0,1,4}}};
+void *Calneed(void *arguments)
+{
+	struct safe *s2=arguments;
+
+	int i,j;
+	for(i=0;i<P;i++)
+	for(j=0;j<R;j++)
+	{
+		need[i][j]=s2->max[i][j]-s2->allot[i][j];
+	}
+
+}
+void *ChkSafe(void *arg)
+{
+	int i,k,pi;
+	struct safe *s=(struct safe *)arg;
+
+	sleep(1);
+	bool finish[5];
+	for(i=0;i<P;i++)
+	{
+		finish[i]=false;
+	}
+	int safeSeq[5];
+	int count=0;
+	while(count<P)
+	{
+		bool found=false;
+		
+		for(pi=0;pi<5;pi++)
+		{
+			if(finish[pi]==false)
+			{
+				int j;
+				for(j=0;j<R;j++)
+					if(need[pi][j]>s->avail[j])
+					break;
+					
+					if(j==R)
+					{
+					for(k=0;k<R;k++)
+						s->avail[k]+=s->allot[pi][k];
+						safeSeq[count++]=pi;
+						finish[pi]=true;
+						found=true;
+					
+			}
+			}
+		}
+			if(found==false)
+		{
+			printf("\nSeq not found");
+		}
+		}
+		printf("\nsyatem in safe sequence : \nSafe seq : ");
+		for(i=0;i<5;i++)
+	{
+		printf("%d ",safeSeq[i]);
+		
+	}
+	
+	}
+	
+	
+
+	int main()
+	{
+	    
+		pthread_t th,th1;
+		pthread_create(&th,NULL,ChkSafe,&s1);
+		pthread_create(&th,NULL,Calneed,&s1);
+		pthread_join(th,NULL);	
+		pthread_join(th1,NULL);
+	}
+
+
+
